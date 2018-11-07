@@ -12,13 +12,9 @@ class TodoListService {
 
   Stream<Post> getTodoList() async* {
     await for (var q in postsCollection.onSnapshot) {
-      final urls = q.docs.map((doc) {
+      for (var doc in q.docs) {
         var data = doc.data();
-        return Post.fromJson(doc.id, data);
-      });
-
-      for (var url in urls) {
-        yield url;
+        yield Post.fromJson(doc.id, data);
       }
     }
   }
