@@ -22,20 +22,13 @@ import 'post_service.dart';
 class PostListComponent implements OnInit {
   final TodoListService todoListService;
 
-  List<String> items = [];
+  Set<Post> items = Set();
   String newTodo = '';
 
   PostListComponent(this.todoListService);
 
   @override
   Future<Null> ngOnInit() async {
-    items = await todoListService.getTodoList();
+    todoListService.getTodoList().listen(((Post post) => items.add(post)));
   }
-
-  void add() {
-    items.add(newTodo);
-    newTodo = '';
-  }
-
-  String remove(int index) => items.removeAt(index);
 }

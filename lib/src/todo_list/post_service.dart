@@ -1,13 +1,53 @@
 import 'dart:async';
 
 import 'package:angular/core.dart';
+import 'package:firebase/firebase.dart';
+import 'package:firebase/firestore.dart' as fs;
 
 @Injectable()
 class TodoListService {
-  List<String> mockTodoList = <String>[
-    "https://i.imgur.com/jKXVFRo.png",
-    "https://i.imgur.com/p7ftnbp.png",
-  ];
+  fs.Firestore get _store => firestore();
 
-  Future<List<String>> getTodoList() async => mockTodoList;
+  fs.CollectionReference get postsCollection => _store.collection(('posts'));
+
+  Stream<Post> getTodoList() async* {
+    await for (var q in postsCollection.onSnapshot) {
+      final urls = q.docs.map((doc) {
+        var data = doc.data();
+        return Post.fromJson(doc.id, data);
+      });
+
+      for (var url in urls) {
+        yield url;
+      }
+    }
+  }
+
+  TodoListService() {
+    initializeApp(
+        apiKey: "AIzaSyBJTRvJDjo7GIfu7keb6zzR7bKIbvtirRY",
+        authDomain: "soshame-7aaa4.firebaseapp.com",
+        databaseURL: "https://soshame-7aaa4.firebaseio.com",
+        projectId: "soshame-7aaa4",
+        storageBucket: "soshame-7aaa4.appspot.com",
+        messagingSenderId: "746995503175");
+  }
+}
+
+class Post {
+  String id;
+  String imageUrl;
+
+  Post.fromJson(String id, Map<String, dynamic> json) {
+    this.id = id;
+    this.imageUrl = json['image_url'];
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Post && runtimeType == other.runtimeType && id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
 }
