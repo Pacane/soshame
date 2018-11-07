@@ -1,0 +1,15 @@
+<!-- Components info: https://webdev.dartlang.org/components -->
+<div>
+
+    <p *ngIf="items.isEmpty">
+        Nothing to do! Add items above.
+    </p>
+
+    <div *ngIf="items.isNotEmpty">
+        <ul>
+            <li *ngFor="let item of items; let i=index">
+                <img src="{{item}}"/>
+            </li>
+        </ul>
+    </div>
+</div>
